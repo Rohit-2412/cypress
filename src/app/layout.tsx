@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import "./globals.css";
 
+import AppStateProvider from "@/lib/providers/state-provider";
 import { DM_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/lib/providers/next-theme-provider";
@@ -28,7 +29,7 @@ export default function RootLayout({
                     enableSystem
                     forcedTheme="dark"
                 >
-                    {children}
+                    <AppStateProvider>{children}</AppStateProvider>
                 </ThemeProvider>
             </body>
         </html>
