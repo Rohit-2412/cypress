@@ -214,37 +214,39 @@ export const getFiles = async (folderId: string) => {
     }
 };
 
-// export const addCollaborators = async (users: User[], workspaceId: string) => {
-//   const response = users.forEach(async (user: User) => {
-//     const userExists = await db.query.collaborators.findFirst({
-//       where: (u, { eq }) =>
-//         and(eq(u.userId, user.id), eq(u.workspaceId, workspaceId)),
-//     });
-//     if (!userExists)
-//       await db.insert(collaborators).values({ workspaceId, userId: user.id });
-//   });
-// };
+export const addCollaborators = async (users: User[], workspaceId: string) => {
+    const response = users.forEach(async (user: User) => {
+        const userExists = await db.query.collaborators.findFirst({
+            where: (u, { eq }) =>
+                and(eq(u.userId, user.id), eq(u.workspaceId, workspaceId)),
+        });
+        if (!userExists)
+            await db
+                .insert(collaborators)
+                .values({ workspaceId, userId: user.id });
+    });
+};
 
-// export const removeCollaborators = async (
-//   users: User[],
-//   workspaceId: string
-// ) => {
-//   const response = users.forEach(async (user: User) => {
-//     const userExists = await db.query.collaborators.findFirst({
-//       where: (u, { eq }) =>
-//         and(eq(u.userId, user.id), eq(u.workspaceId, workspaceId)),
-//     });
-//     if (userExists)
-//       await db
-//         .delete(collaborators)
-//         .where(
-//           and(
-//             eq(collaborators.workspaceId, workspaceId),
-//             eq(collaborators.userId, user.id)
-//           )
-//         );
-//   });
-// };
+export const removeCollaborators = async (
+    users: User[],
+    workspaceId: string
+) => {
+    const response = users.forEach(async (user: User) => {
+        const userExists = await db.query.collaborators.findFirst({
+            where: (u, { eq }) =>
+                and(eq(u.userId, user.id), eq(u.workspaceId, workspaceId)),
+        });
+        if (userExists)
+            await db
+                .delete(collaborators)
+                .where(
+                    and(
+                        eq(collaborators.workspaceId, workspaceId),
+                        eq(collaborators.userId, user.id)
+                    )
+                );
+    });
+};
 
 export const findUser = async (userId: string) => {
     const response = await db.query.users.findFirst({
@@ -254,22 +256,22 @@ export const findUser = async (userId: string) => {
 };
 
 // export const getActiveProductsWithPrice = async () => {
-//   try {
-//     const res = await db.query.products.findMany({
-//       where: (pro, { eq }) => eq(pro.active, true),
+//     try {
+//         const res = await db.query.products.findMany({
+//             where: (pro, { eq }) => eq(pro.active, true),
 
-//       with: {
-//         prices: {
-//           where: (pri, { eq }) => eq(pri.active, true),
-//         },
-//       },
-//     });
-//     if (res.length) return { data: res, error: null };
-//     return { data: [], error: null };
-//   } catch (error) {
-//     console.log(error);
-//     return { data: [], error };
-//   }
+//             with: {
+//                 prices: {
+//                     where: (pri, { eq }) => eq(pri.active, true),
+//                 },
+//             },
+//         });
+//         if (res.length) return { data: res, error: null };
+//         return { data: [], error: null };
+//     } catch (error) {
+//         console.log(error);
+//         return { data: [], error };
+//     }
 // };
 
 export const createFolder = async (folder: Folder) => {

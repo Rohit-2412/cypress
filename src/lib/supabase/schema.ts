@@ -138,7 +138,7 @@ export const collaborators = pgTable("collaborators", {
         .references(() => users.id, { onDelete: "cascade" }),
 });
 
-//Dont Delete!!!
+// Don't Delete!!!
 export const productsRelations = relations(products, ({ many }) => ({
     prices: many(prices),
 }));

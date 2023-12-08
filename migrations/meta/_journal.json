@@ -15,6 +15,13 @@
       "when": 1701885960599,
       "tag": "0001_freezing_nekra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1701973754714,
+      "tag": "0002_lumpy_ender_wiggin",
+      "breakpoints": true
     }
   ]
 }

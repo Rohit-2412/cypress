@@ -37,31 +37,9 @@ const HomePage = () => {
                     </Button>
                 </div>
 
-                <div
-                    className="md:mt-[-90px]
-          sm:w-full
-          w-[750px]
-          flex
-          justify-center
-          items-center
-          mt-[-40px]
-          relative
-          sm:ml-0
-          ml-[-50px]
-        "
-                >
+                <div className="md:mt-[-90px] sm:w-full w-[750px] flex justify-center items-center mt-[-40px] relative sm:ml-0 ml-[-50px]">
                     <Image src={Banner} alt="Application Banner" />
-                    <div
-                        className="bottom-0
-            top-[50%]
-            bg-gradient-to-t
-            dark:from-background
-            left-0
-            right-0
-            absolute
-            z-10
-          "
-                    />
+                    <div className="bottom-0  top-[50%]  bg-gradient-to-t  dark:from-background  left-0  right-0  absolute  z-10" />
                 </div>
             </section>
 
@@ -94,9 +72,9 @@ const HomePage = () => {
           before:absolute
         "
                 >
-                    {[...Array(2)].map((arr) => (
+                    {[...Array(2)].map((_, idx) => (
                         <div
-                            key={arr}
+                            key={idx}
                             className="flex flex-nowrap animate-slide"
                         >
                             {CLIENTS.map((client) => (

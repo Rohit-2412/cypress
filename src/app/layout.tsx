@@ -5,6 +5,7 @@ import "./globals.css";
 import AppStateProvider from "@/lib/providers/state-provider";
 import { DM_Sans } from "next/font/google";
 import type { Metadata } from "next";
+import { SupabaseUserProvider } from "@/lib/providers/supabase-user-provider";
 import { ThemeProvider } from "@/lib/providers/next-theme-provider";
 import { twMerge } from "tailwind-merge";
 
@@ -26,10 +27,12 @@ export default function RootLayout({
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="dark"
-                    enableSystem
+                    enableSystem={true}
                     forcedTheme="dark"
                 >
-                    <AppStateProvider>{children}</AppStateProvider>
+                    <AppStateProvider>
+                        <SupabaseUserProvider>{children}</SupabaseUserProvider>
+                    </AppStateProvider>
                 </ThemeProvider>
             </body>
         </html>
