@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Accordion } from "../ui/accordion";
+import Dropdown from "./dropdown";
 import { Folder } from "@/lib/supabase/supabase.types";
 import { PlusIcon } from "lucide-react";
 import TooltipComponent from "../global/tooltip-component";
@@ -48,20 +49,14 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
                 },
             });
         }
-    }, [
-        dispatch,
-        state.workspaces,
-        workspaceFolders,
-        workspaceFolders.length,
-        workspaceId,
-    ]);
+    }, [workspaceFolders, workspaceId]);
 
     // state
     useEffect(() => {
         SetFolders(
             state.workspaces.find((w) => w.id === workspaceId)?.folders || []
         );
-    }, [state.workspaces, workspaceId]);
+    }, [state]);
 
     // add folder
     const addFolderHandler = async () => {
@@ -123,7 +118,15 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
                 {folders
                     .filter((folder) => !folder.inTrash)
                     .map((folder) => (
-                        <div key={folder.id}>folder</div>
+                        <div key={folder.id}>
+                            <Dropdown
+                                key={folder.id}
+                                id={folder.id}
+                                iconId={folder.iconId}
+                                title={folder.title}
+                                listType="folder"
+                            />
+                        </div>
                     ))}
             </Accordion>
         </>

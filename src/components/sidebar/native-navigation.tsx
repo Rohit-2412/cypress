@@ -6,6 +6,7 @@ import CypressTrashIcon from "../icons/cypressTrashIcon";
 import { HomeIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import Settings from "../settings/settings";
 import { twMerge } from "tailwind-merge";
 
 interface NativeNavigationProps {
@@ -22,30 +23,24 @@ const NativeNavigation: React.FC<NativeNavigationProps> = ({
             <ul className="flex flex-col gap-2">
                 <li>
                     <Link
-                        className="group/native flex text-Neutrals/neutrals-7 gap-2"
-                        href={`dashboard/${myWorkspaceId}`}
+                        className="group/native flex text-Neutrals/neutrals-7 gap-2 cursor-pointer"
+                        href={`/dashboard/${myWorkspaceId}`}
                     >
                         <CypressHomeIcon />
                         <span>My Workspace</span>
                     </Link>
                 </li>
-                <li>
-                    <Link
-                        className="group/native flex text-Neutrals/neutrals-7 gap-2"
-                        href={`dashboard/${myWorkspaceId}`}
-                    >
+
+                <Settings>
+                    <li className="group/native flex text-Neutrals/neutrals-7 gap-2 cursor-pointer">
                         <CypressSettingsIcon />
                         <span>Settings</span>
-                    </Link>
-                </li>
-                <li>
-                    <Link
-                        className="group/native flex text-Neutrals/neutrals-7 gap-2"
-                        href={`dashboard/${myWorkspaceId}`}
-                    >
-                        <CypressTrashIcon />
-                        <span>Trash</span>
-                    </Link>
+                    </li>
+                </Settings>
+
+                <li className="group/native flex text-Neutrals/neutrals-7 gap-2 cursor-pointer">
+                    <CypressTrashIcon />
+                    <span>Trash</span>
                 </li>
             </ul>
         </div>

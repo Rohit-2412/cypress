@@ -11,18 +11,13 @@ import NativeNavigation from "./native-navigation";
 import PlanUsage from "./plan-usage";
 import React from "react";
 import { ScrollArea } from "../ui/scroll-area";
+import UserCard from "./user-card";
 import WorkspaceDropdown from "./workspace-dropdown";
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 
-// import WorkspaceDropdown from './workspace-dropdown';
-// import PlanUsage from './plan-usage';
-// import NativeNavigation from './native-navigation';
-// import { ScrollArea } from '../ui/scroll-area';
-// import FoldersDropdownList from './folders-dropdown-list';
-// import UserCard from './user-card';
 interface SidebarProps {
     params: {
         workspaceId: string;
@@ -90,6 +85,7 @@ const Sidebar: React.FC<SidebarProps> = async ({ params, className }) => {
                     workspaceId={params.workspaceId}
                 />
             </ScrollArea>
+            <UserCard subscription={subscriptionData} />
         </aside>
     );
 };

@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -18,7 +19,6 @@ import CollaboratorSearch from "./collaborator-search";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { ScrollArea } from "../ui/scroll-area";
-import { SelectGroup } from "@radix-ui/react-select";
 import { useRouter } from "next/navigation";
 import { useSupabaseUser } from "@/lib/providers/supabase-user-provider";
 import { useToast } from "../ui/use-toast";

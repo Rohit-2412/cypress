@@ -23,6 +23,7 @@ const db = drizzle(client, { schema });
 //         });
 //         console.log("✅ Database migrated");
 //     } catch (e) {
+//         console.log(e);
 //         console.log("🔴 Error migrating database");
 //     }
 // };

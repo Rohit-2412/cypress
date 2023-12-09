@@ -7,6 +7,8 @@ import { DM_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import { SupabaseUserProvider } from "@/lib/providers/supabase-user-provider";
 import { ThemeProvider } from "@/lib/providers/next-theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import db from "@/lib/supabase/db";
 import { twMerge } from "tailwind-merge";
 
 const inter = DM_Sans({ subsets: ["latin"] });
@@ -21,6 +23,7 @@ export default function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
+    // console.log(db);
     return (
         <html lang="en">
             <body className={twMerge("bg-background", inter.className)}>
@@ -28,10 +31,12 @@ export default function RootLayout({
                     attribute="class"
                     defaultTheme="dark"
                     enableSystem={true}
-                    forcedTheme="dark"
                 >
                     <AppStateProvider>
-                        <SupabaseUserProvider>{children}</SupabaseUserProvider>
+                        <SupabaseUserProvider>
+                            {children}
+                            <Toaster />
+                        </SupabaseUserProvider>
                     </AppStateProvider>
                 </ThemeProvider>
             </body>
