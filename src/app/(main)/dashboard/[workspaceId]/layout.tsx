@@ -1,20 +1,22 @@
+import MobileSidebar from "@/components/sidebar/mobile-sidebar";
 import React from "react";
 import Sidebar from "@/components/sidebar/sidebar";
 
-interface WorkspaceIdPageLayoutProps {
+interface LayoutProps {
     children: React.ReactNode;
     params: any;
 }
-const WorkspaceIdPageLayout: React.FC<WorkspaceIdPageLayoutProps> = ({
-    children,
-    params,
-}) => {
+
+const Layout: React.FC<LayoutProps> = ({ children, params }) => {
     return (
         <main className="flex overflow-hidden h-screen w-screen">
             <Sidebar params={params} />
-
-            {/* Mobile Sidebar */}
-
+            <MobileSidebar>
+                <Sidebar
+                    params={params}
+                    className="w-screen inline-block sm:hidden"
+                />
+            </MobileSidebar>
             <div className="dark:border-Neutrals-12/70  border-l-[1px]  w-full  relative  overflow-scroll">
                 {children}
             </div>
@@ -22,4 +24,4 @@ const WorkspaceIdPageLayout: React.FC<WorkspaceIdPageLayoutProps> = ({
     );
 };
 
-export default WorkspaceIdPageLayout;
+export default Layout;
