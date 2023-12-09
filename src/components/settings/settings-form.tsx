@@ -1,6 +1,15 @@
 "use client";
 
 import { Alert, AlertDescription } from "../ui/alert";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "../ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Briefcase, Lock, Plus, Share } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -16,6 +25,7 @@ import { User, workspace } from "@/lib/supabase/supabase.types";
 import {
     addCollaborators,
     deleteWorkspace,
+    getCollaborators,
     removeCollaborators,
     updateWorkspace,
 } from "@/lib/supabase/queries";
@@ -27,6 +37,7 @@ import { Label } from "../ui/label";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { getUserAvatar } from "@/lib/utils";
 import { useAppState } from "@/lib/providers/state-provider";
 import { useRouter } from "next/navigation";
 import { useSupabaseUser } from "@/lib/providers/supabase-user-provider";
@@ -52,7 +63,6 @@ const SettingsForm = () => {
     // Payment portal
 
     // add collaborators
-
     const addCollaborator = async (profile: User) => {
         if (!workspaceId) return;
         // if (subscription?.status !== "active" && collaborators.length >= 2) {
@@ -163,6 +173,36 @@ const SettingsForm = () => {
         }
     }, [state, workspaceId]);
 
+    useEffect(() => {
+        if (!workspaceId) return;
+
+        const fetchCollaborators = async () => {
+            const response = await getCollaborators(workspaceId);
+
+            if (response.length) {
+                console.log("shared work space");
+                setPermissions("shared");
+                setCollaborators(response);
+            }
+        };
+
+        fetchCollaborators();
+    }, []);
+
+    const onClickAlertConfirm = async () => {
+        if (!workspaceId) return;
+        if (collaborators.length > 0) {
+            await removeCollaborators(collaborators, workspaceId);
+        }
+        setPermissions("private");
+        setOpenAlertMessage(false);
+    };
+
+    const onPermissionsChange = (val: string) => {
+        if (val === "private") {
+            setOpenAlertMessage(true);
+        } else setPermissions(val);
+    };
     return (
         <div className="flex flex-col gap-4">
             <p className="flex items-center gap-2 mt-6">
@@ -214,10 +254,8 @@ const SettingsForm = () => {
                         Permission
                     </Label>
                     <Select
-                        onValueChange={(val) => {
-                            setPermissions(val);
-                        }}
-                        defaultValue={permissions}
+                        onValueChange={onPermissionsChange}
+                        value={permissions}
                     >
                         <SelectTrigger className="w-full h-20">
                             <SelectValue />
@@ -269,7 +307,7 @@ const SettingsForm = () => {
                             <span className="text-sm text-muted-foreground">
                                 Collaborators {collaborators.length || ""}
                             </span>
-                            <ScrollArea className="h-[120px] overflow-y-scroll w-full rounded-md border border-muted-foreground/20">
+                            <ScrollArea className="h-[160px] overflow-y-scroll w-full rounded-md border border-muted-foreground/20">
                                 {collaborators.length ? (
                                     collaborators.map((c) => (
                                         <div
@@ -278,7 +316,11 @@ const SettingsForm = () => {
                                         >
                                             <div className="flex gap-4 items-center">
                                                 <Avatar>
-                                                    <AvatarImage src="/avatars/7.png" />
+                                                    <AvatarImage
+                                                        src={getUserAvatar(
+                                                            c?.email
+                                                        )}
+                                                    />
                                                     <AvatarFallback>
                                                         PJ
                                                     </AvatarFallback>
@@ -336,6 +378,28 @@ const SettingsForm = () => {
                     </Button>
                 </Alert>
             </div>
+
+            <AlertDialog open={openAlertMessage}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDescription>
+                            Changing a Shared workspace to a Private workspace
+                            will remove all collaborators permanently.
+                        </AlertDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel
+                            onClick={() => setOpenAlertMessage(false)}
+                        >
+                            Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction onClick={onClickAlertConfirm}>
+                            Continue
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };

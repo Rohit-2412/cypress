@@ -1,12 +1,6 @@
 "use client";
 
-import { Folder, workspace } from "@/lib/supabase/supabase.types";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {
-    appFoldersType,
-    appWorkspacesType,
-    useAppState,
-} from "@/lib/providers/state-provider";
 import {
     updateFile,
     updateFolder,
@@ -20,8 +14,8 @@ import Loader from "../global/Loader";
 import React from "react";
 import { UploadBannerFormSchema } from "@/lib/types";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useAppState } from "@/lib/providers/state-provider";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 interface BannerUploadFormProps {
     dirType: "workspace" | "file" | "folder";
@@ -41,7 +35,6 @@ const BannerUploadForm: React.FC<BannerUploadFormProps> = ({ dirType, id }) => {
         defaultValues: {
             banner: "",
         },
-        resolver: zodResolver(UploadBannerFormSchema),
     });
     const onSubmitHandler: SubmitHandler<
         z.infer<typeof UploadBannerFormSchema>

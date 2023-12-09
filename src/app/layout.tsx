@@ -5,6 +5,7 @@ import "./globals.css";
 import AppStateProvider from "@/lib/providers/state-provider";
 import { DM_Sans } from "next/font/google";
 import type { Metadata } from "next";
+import { SocketProvider } from "@/lib/providers/socket-provider";
 import { SupabaseUserProvider } from "@/lib/providers/supabase-user-provider";
 import { ThemeProvider } from "@/lib/providers/next-theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -34,8 +35,10 @@ export default function RootLayout({
                 >
                     <AppStateProvider>
                         <SupabaseUserProvider>
-                            {children}
-                            <Toaster />
+                            <SocketProvider>
+                                {children}
+                                <Toaster />
+                            </SocketProvider>
                         </SupabaseUserProvider>
                     </AppStateProvider>
                 </ThemeProvider>
