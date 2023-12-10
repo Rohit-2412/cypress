@@ -11,7 +11,16 @@ import {
     AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Briefcase, Lock, Plus, Share } from "lucide-react";
+import {
+    Briefcase,
+    CreditCard,
+    ExternalLink,
+    Lock,
+    LogOut,
+    Plus,
+    Share,
+    User as UserIcon,
+} from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import {
     Select,
@@ -29,17 +38,20 @@ import {
     removeCollaborators,
     updateWorkspace,
 } from "@/lib/supabase/queries";
+import { getUserAvatar, postData } from "@/lib/utils";
 
 import { Button } from "../ui/button";
 import CollaboratorSearch from "../global/collaborator-search";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import Link from "next/link";
+import LogoutButton from "../global/logout-button";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { getUserAvatar } from "@/lib/utils";
 import { useAppState } from "@/lib/providers/state-provider";
 import { useRouter } from "next/navigation";
+import { useSubscriptionModal } from "@/lib/providers/subscription-modal-provider";
 import { useSupabaseUser } from "@/lib/providers/supabase-user-provider";
 import { useToast } from "../ui/use-toast";
 import { v4 } from "uuid";
@@ -49,6 +61,7 @@ const SettingsForm = () => {
     const { toast } = useToast();
     const { user, subscription } = useSupabaseUser();
     const supabase = createClientComponentClient();
+    const { open, setOpen } = useSubscriptionModal();
 
     const { state, workspaceId, dispatch } = useAppState();
     const [permissions, setPermissions] = useState("private");
@@ -59,16 +72,15 @@ const SettingsForm = () => {
     const [uploadingProfilePicture, setUploadingProfilePicture] =
         useState(false);
     const [uploadingLogo, setUploadingLogo] = useState(false);
-
-    // Payment portal
+    const [loadingPortal, setLoadingPortal] = useState(false);
 
     // add collaborators
     const addCollaborator = async (profile: User) => {
         if (!workspaceId) return;
-        // if (subscription?.status !== "active" && collaborators.length >= 2) {
-        //     setOpen(true);
-        //     return;
-        // }
+        if (subscription?.status !== "active" && collaborators.length >= 2) {
+            setOpen(true);
+            return;
+        }
         await addCollaborators([profile], workspaceId);
         setCollaborators([...collaborators, profile]);
     };
@@ -152,16 +164,23 @@ const SettingsForm = () => {
             }
         }
     };
-    // onclick
 
-    // fetching avatar details
+    // Payment portal redirect
+    const redirectToCustomerPortal = async () => {
+        setLoadingPortal(true);
+        try {
+            const { url, error } = await postData({
+                url: "/api/create-portal-link",
+            });
+            window.location.assign(url);
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoadingPortal(false);
+        }
+    };
 
     // get workspace details
-
-    // get all collaborators
-
-    // TODO: Payment portal redirect
-
     useEffect(() => {
         if (!workspaceId) return;
 
@@ -173,6 +192,7 @@ const SettingsForm = () => {
         }
     }, [state, workspaceId]);
 
+    // get all collaborators
     useEffect(() => {
         if (!workspaceId) return;
 
@@ -202,6 +222,41 @@ const SettingsForm = () => {
         if (val === "private") {
             setOpenAlertMessage(true);
         } else setPermissions(val);
+    };
+
+    const onChangeProfilePicture = async (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        if (!user) return;
+
+        const targetFile = e.target.files?.[0];
+
+        if (!targetFile) return;
+
+        const uuid = v4();
+        setUploadingProfilePicture(true);
+        let filePath = null;
+        if (targetFile) {
+            try {
+                const { data, error } = await supabase.storage
+                    .from("avatars")
+                    .upload(`avatars.${uuid}`, targetFile, {
+                        cacheControl: "3600",
+                        upsert: true,
+                    });
+                if (error) throw new Error("");
+
+                filePath = data.path;
+            } catch (error) {
+                console.log("Error", error);
+                toast({
+                    variant: "destructive",
+                    title: "Error! Could not upload your profile picture",
+                });
+            } finally {
+                setUploadingProfilePicture(false);
+            }
+        }
     };
     return (
         <div className="flex flex-col gap-4">
@@ -245,7 +300,6 @@ const SettingsForm = () => {
                         Plan
                     </small>
                 )}
-
                 <>
                     <Label
                         htmlFor="permissions"
@@ -350,7 +404,6 @@ const SettingsForm = () => {
                         </div>
                     </div>
                 )}
-
                 <Alert variant={"destructive"}>
                     <AlertDescription>
                         Warning! deleting you workspace will permanently delete
@@ -377,6 +430,76 @@ const SettingsForm = () => {
                         Delete Workspace
                     </Button>
                 </Alert>
+                <div className="flex items-center">
+                    <Avatar>
+                        <AvatarImage src={getUserAvatar(user?.email)} />
+                    </Avatar>
+                    <div className="flex flex-col ml-6">
+                        <small className="text-muted-foreground cursor-not-allowed">
+                            {user ? user.email : ""}
+                        </small>
+                        <Label
+                            htmlFor="profilePicture"
+                            className="text-sm text-muted-foreground"
+                        >
+                            Profile Picture
+                        </Label>
+                        <Input
+                            name="profilePicture"
+                            type="file"
+                            accept="image/*"
+                            placeholder="Profile Picture"
+                            onChange={onChangeProfilePicture}
+                            disabled={uploadingProfilePicture}
+                        />
+                    </div>
+                </div>
+                <LogoutButton>
+                    <div className="flex items-center">
+                        <LogOut />
+                    </div>
+                </LogoutButton>
+                <p className="flex items-center gap-2 mt-6">
+                    <CreditCard size={20} /> Billing & Plan
+                </p>
+                <Separator />
+                <p className="text-muted-foreground">
+                    You are currently on a{" "}
+                    {subscription?.status === "active" ? "Pro" : "Free"} Plan
+                </p>
+                <Link
+                    href="/"
+                    target="_blank"
+                    className="text-muted-foreground flex flex-row items-center gap-2"
+                >
+                    View Plans <ExternalLink size={16} />
+                </Link>
+                {subscription?.status === "active" ? (
+                    <div>
+                        <Button
+                            type="button"
+                            size="sm"
+                            variant={"secondary"}
+                            disabled={loadingPortal}
+                            className="text-sm"
+                            onClick={redirectToCustomerPortal}
+                        >
+                            Manage Subscription
+                        </Button>
+                    </div>
+                ) : (
+                    <div>
+                        <Button
+                            type="button"
+                            size="sm"
+                            variant={"secondary"}
+                            className="text-sm"
+                            onClick={() => setOpen(true)}
+                        >
+                            Start Plan
+                        </Button>
+                    </div>
+                )}
             </div>
 
             <AlertDialog open={openAlertMessage}>

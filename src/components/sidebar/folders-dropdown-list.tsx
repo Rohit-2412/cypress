@@ -10,6 +10,8 @@ import TooltipComponent from "../global/tooltip-component";
 import { createFolder } from "@/lib/supabase/queries";
 import { toast } from "../ui/use-toast";
 import { useAppState } from "@/lib/providers/state-provider";
+import { useSubscriptionModal } from "@/lib/providers/subscription-modal-provider";
+import useSupabaseRealtime from "@/lib/hooks/useSupabaseRealtime";
 import { useSupabaseUser } from "@/lib/providers/supabase-user-provider";
 import { v4 } from "uuid";
 
@@ -22,12 +24,13 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
     workspaceFolders,
     workspaceId,
 }) => {
-    // keep track of local state of folders
-
-    // TODO: set real time updates
+    // real time subscription
+    useSupabaseRealtime();
     const { state, dispatch, folderId } = useAppState();
     const [folders, SetFolders] = useState(workspaceFolders);
+    // keep track of local state of folders
     const { subscription } = useSupabaseUser();
+    const { open, setOpen } = useSubscriptionModal();
 
     // effect set initial state based on server data
     useEffect(() => {
@@ -62,6 +65,7 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
     const addFolderHandler = async () => {
         if (folders.length >= 3 && !subscription) {
             // open modal
+            setOpen(true);
         } else {
             const newFolder: Folder = {
                 data: null,

@@ -7,6 +7,7 @@ import { HomeIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import Settings from "../settings/settings";
+import Trash from "../trash/trash";
 import { twMerge } from "tailwind-merge";
 
 interface NativeNavigationProps {
@@ -38,10 +39,12 @@ const NativeNavigation: React.FC<NativeNavigationProps> = ({
                     </li>
                 </Settings>
 
-                <li className="group/native flex text-Neutrals/neutrals-7 gap-2 cursor-pointer">
-                    <CypressTrashIcon />
-                    <span>Trash</span>
-                </li>
+                <Trash>
+                    <li className="group/native flex text-Neutrals/neutrals-7 gap-2 cursor-pointer">
+                        <CypressTrashIcon />
+                        <span>Trash</span>
+                    </li>
+                </Trash>
             </ul>
         </div>
     );

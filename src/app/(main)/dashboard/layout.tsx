@@ -1,15 +1,26 @@
 import React from "react";
+import { SubscriptionModalProvider } from "@/lib/providers/subscription-modal-provider";
+import { getActiveProductsWithPrice } from "@/lib/supabase/queries";
 
-interface DashboardLayoutProps {
+interface LayoutProps {
     children: React.ReactNode;
     params: any;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({
-    children,
-    params,
-}) => {
-    return <main className="flex overflow-hidden h-screen">{children}</main>;
+const Layout: React.FC<LayoutProps> = async ({ children, params }) => {
+    const { data: products, error } = await getActiveProductsWithPrice();
+    console.log(products);
+    if (error) {
+        console.log(error);
+        // throw new Error();
+    }
+    return (
+        <main className="flex over-hidden h-screen">
+            <SubscriptionModalProvider products={products}>
+                {children}
+            </SubscriptionModalProvider>
+        </main>
+    );
 };
 
-export default DashboardLayout;
+export default Layout;
